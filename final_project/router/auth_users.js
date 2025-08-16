@@ -14,26 +14,7 @@ const authenticatedUser = (username,password)=>{ //returns boolean
 }
 
 //only registered users can login
-/*regd_users.post("/login", (req,res) => {
-    const { username, password } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).json({ message: "Username and password are required" });
-    }
-
-    if (!authenticatedUser(username, password)) {
-        return res.status(401).json({ message: "Invalid username or password" });
-    }
-
-    // Create JWT token for session
-    const accessToken = jwt.sign({ username }, "access", { expiresIn: "1h" });
-
-    // Save token in session
-    req.session.authorization = { accessToken };
-
-    return res.status(200).json({ message: "User successfully logged in", token: accessToken });
-
-});*/
 
 regd_users.post("/login", (req, res) => {
     const username = req.body.username;
@@ -51,7 +32,8 @@ regd_users.post("/login", (req, res) => {
 
     if (userExists.length > 0) {
         // Generate JWT token
-        let accessToken = jwt.sign({ data: password }, 'access', { expiresIn: 60 * 60 });
+        //let accessToken = jwt.sign({ data: password }, 'access', { expiresIn: 60 * 60 });
+        const accessToken = jwt.sign({ username: username }, "access", { expiresIn: "1h" });
 
         // 🔑 Store token in session
         req.session.authorization = {
@@ -68,35 +50,7 @@ regd_users.post("/login", (req, res) => {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  /*const isbn = req.params.isbn;
-  const review = req.query.review;
-  if (!review) {
-        return res.status(400).json({ message: "Review query parameter is required" });
-    }
-    const token = req.session.authorization?.accessToken;
-    if (!token) {
-        return res.status(401).json({ message: "User not logged in" });
-    }
-    let username;
-    try {
-        const decoded = jwt.verify(token, "access");
-        username = decoded.username;
-    } catch (err) {
-        return res.status(403).json({ message: "Invalid token" });
-    }
-    if (!books[isbn]) {
-        return res.status(404).json({ message: "Book not found" });
-    }
-    if (!books[isbn].reviews) {
-        books[isbn].reviews = {};
-    }
-    books[isbn].reviews[username] = review;
-
-    return res.status(200).json({ 
-        message: "Review added/updated successfully", 
-        reviews: books[isbn].reviews 
-    });*/
-
+ 
     const isbn = req.params.isbn;
   const review = req.query.review;
 
@@ -147,6 +101,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
     try {
         const decoded = jwt.verify(token, "access");
         username = decoded.username;
+        //console.log("Checking review for username:", username);
     } catch (err) {
         return res.status(403).json({ message: "Invalid token" });
     }
@@ -156,8 +111,10 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
         return res.status(404).json({ message: "Book not found" });
     }
 
+
     // Check if reviews exist for this book
     if (!books[isbn].reviews || !books[isbn].reviews[username]) {
+       
         return res.status(404).json({ message: "No review found for this user" });
     }
 
