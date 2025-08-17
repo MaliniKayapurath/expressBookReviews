@@ -32,7 +32,6 @@ regd_users.post("/login", (req, res) => {
 
     if (userExists.length > 0) {
         // Generate JWT token
-        //let accessToken = jwt.sign({ data: password }, 'access', { expiresIn: 60 * 60 });
         const accessToken = jwt.sign({ username: username }, "access", { expiresIn: "1h" });
 
         // 🔑 Store token in session
@@ -49,9 +48,8 @@ regd_users.post("/login", (req, res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
- 
-    const isbn = req.params.isbn;
+  
+  const isbn = req.params.isbn;
   const review = req.query.review;
 
   if (!review) {
